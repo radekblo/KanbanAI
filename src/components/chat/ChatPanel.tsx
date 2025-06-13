@@ -11,22 +11,27 @@ import { Send, MessageSquare } from 'lucide-react';
 
 export default function ChatPanel() {
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    // Example initial messages
     const initial: ChatMessage[] = [
       { id: 'msg1', user: 'Alice', text: 'Hey team, how is the sprint going?', timestamp: Date.now() - 60000 * 5 },
       { id: 'msg2', user: 'Bob', text: 'Making good progress on the login feature!', timestamp: Date.now() - 60000 * 3 },
       { id: 'msg3', user: 'KanbanAI', text: 'Welcome to the team chat!', timestamp: Date.now() - 60000 * 10 },
     ];
-    initial.sort((a,b) => a.timestamp - b.timestamp); // ensure sorted
+    initial.sort((a,b) => a.timestamp - b.timestamp);
     return initial;
   });
   const [newMessage, setNewMessage] = useState('');
-  const [currentUser, setCurrentUser] = useState('User'); // For MVP, allow user to set their name simply
+  const [currentUser, setCurrentUser] = useState('User');
+  const [isMounted, setIsMounted] = useState(false);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Auto-scroll to bottom
+    setIsMounted(true);
+    const name = prompt("Enter your name for chat:", "User");
+    if (name) setCurrentUser(name);
+  }, []);
+
+  useEffect(() => {
     if (scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
       if (viewport) {
@@ -34,13 +39,6 @@ export default function ChatPanel() {
       }
     }
   }, [messages]);
-  
-  // Simple way to let user "set" their name for this session
-  useEffect(() => {
-    const name = prompt("Enter your name for chat:", "User");
-    if (name) setCurrentUser(name);
-  }, []);
-
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
@@ -77,7 +75,9 @@ export default function ChatPanel() {
               <div className="flex-1">
                 <div className="flex items-baseline gap-2">
                   <p className="font-semibold text-sm text-card-foreground">{msg.user}</p>
-                  <p className="text-xs text-muted-foreground">{formatTime(msg.timestamp)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {isMounted ? formatTime(msg.timestamp) : '...'}
+                  </p>
                 </div>
                 <p className="text-sm bg-secondary p-2 rounded-lg inline-block max-w-full break-words text-secondary-foreground">{msg.text}</p>
               </div>
