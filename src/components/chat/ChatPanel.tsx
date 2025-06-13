@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef, type FormEvent } from 'react';
@@ -10,15 +11,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Send, MessageSquare } from 'lucide-react';
 
 export default function ChatPanel() {
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    const initial: ChatMessage[] = [
-      { id: 'msg1', user: 'Alice', text: 'Hey team, how is the sprint going?', timestamp: Date.now() - 60000 * 5 },
-      { id: 'msg2', user: 'Bob', text: 'Making good progress on the login feature!', timestamp: Date.now() - 60000 * 3 },
-      { id: 'msg3', user: 'KanbanAI', text: 'Welcome to the team chat!', timestamp: Date.now() - 60000 * 10 },
-    ];
-    initial.sort((a,b) => a.timestamp - b.timestamp);
-    return initial;
-  });
+  const [messages, setMessages] = useState<ChatMessage[]>([]); // Initialize with empty array
   const [newMessage, setNewMessage] = useState('');
   const [currentUser, setCurrentUser] = useState('User');
   const [isMounted, setIsMounted] = useState(false);
@@ -26,10 +19,22 @@ export default function ChatPanel() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Set initial messages that depend on Date.now() only on the client
+    const initialClientMessages: ChatMessage[] = [
+      { id: 'msg1', user: 'Alice', text: 'Hey team, how is the sprint going?', timestamp: Date.now() - 60000 * 5 },
+      { id: 'msg2', user: 'Bob', text: 'Making good progress on the login feature!', timestamp: Date.now() - 60000 * 3 },
+      { id: 'msg3', user: 'KanbanAI', text: 'Welcome to the team chat!', timestamp: Date.now() - 60000 * 10 },
+    ];
+    initialClientMessages.sort((a,b) => a.timestamp - b.timestamp);
+    setMessages(initialClientMessages);
+
+    // For time formatting, ensure it runs after mount
     setIsMounted(true);
+    
+    // Prompt for user name
     const name = prompt("Enter your name for chat:", "User");
     if (name) setCurrentUser(name);
-  }, []);
+  }, []); // Empty dependency array ensures this runs once on mount
 
   useEffect(() => {
     if (scrollAreaRef.current) {
