@@ -1,6 +1,1 @@
-# Firebase Studio
-
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at src/app/page.tsx.
-# KanbanAI
+KanbanAI: Collaborative task management with a real-time Kanban board, AI task prioritization, and team chat. Built with Next.js, React, ShadCN UI, Tailwind, and Genkit.
